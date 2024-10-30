@@ -1,0 +1,341 @@
+openapi: 3.0.0
+info:
+  title: Центр Опережающей Профессиональной Подготовки API
+  description: REST API для взаимодействия с региональной информационной платформой.
+  version: 1.0.0
+servers:
+- url: https://api.copp68.gov/v1
+  description: Продакшн сервер
+- url: http://localhost:8080
+  description: Локальный сервер для тестирования
+paths:
+  /users:
+    get:
+      summary: Получить список всех пользователей
+      operationId: users_get
+      responses:
+        "200":
+          description: Список пользователей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+                x-content-type: application/json
+              examples:
+                example:
+                  value:
+                  - id: 1
+                    name: Иван Иванов
+                    email: ivan@example.com
+                    role: admin
+                  - id: 2
+                    name: Петр Петров
+                    email: petr@example.com
+                    role: user
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+    post:
+      summary: Создать нового пользователя
+      operationId: users_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+            examples:
+              example:
+                value:
+                  name: Алексей Смирнов
+                  email: alexey@example.com
+                  password: mypassword123
+                  role: user
+        required: true
+      responses:
+        "201":
+          description: Пользователь создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                example:
+                  value:
+                    id: 3
+                    name: Алексей Смирнов
+                    email: alexey@example.com
+                    role: user
+        "400":
+          description: Неверные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                example:
+                  value:
+                    message: Поле 'email' должно быть уникальным
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /users/{id}:
+    get:
+      summary: Получить информацию о конкретном пользователе
+      operationId: users_id_get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Информация о пользователе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "404":
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                example:
+                  value:
+                    message: Пользователь не найден
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+    put:
+      summary: Обновить данные пользователя
+      operationId: users_id_put
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+        required: true
+      responses:
+        "200":
+          description: Пользователь обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "404":
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+    delete:
+      summary: Удалить пользователя
+      operationId: users_id_delete
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "204":
+          description: Пользователь удален
+        "404":
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /programs:
+    get:
+      summary: Получить список всех программ
+      operationId: programs_get
+      responses:
+        "200":
+          description: Список программ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Program'
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+    post:
+      summary: Создать новую программу
+      operationId: programs_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProgramInput'
+        required: true
+      responses:
+        "201":
+          description: Программа создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Program'
+        "400":
+          description: Неверные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /applications:
+    get:
+      summary: Получить список всех заявок
+      operationId: applications_get
+      responses:
+        "200":
+          description: Список заявок
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Application'
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+    post:
+      summary: Создать новую заявку
+      operationId: applications_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationInput'
+        required: true
+      responses:
+        "201":
+          description: Заявка создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+        "400":
+          description: Неверные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+      example:
+        role: role
+        name: name
+        id: 0
+        email: email
+    UserInput:
+      required:
+      - email
+      - name
+      - password
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+    Program:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        organization_id:
+          type: integer
+        duration:
+          type: integer
+      example:
+        duration: 1
+        organization_id: 6
+        name: name
+        description: description
+        id: 0
+    ProgramInput:
+      required:
+      - duration
+      - name
+      - organization_id
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        organization_id:
+          type: integer
+        duration:
+          type: integer
+    Application:
+      type: object
+      properties:
+        id:
+          type: integer
+        program_id:
+          type: integer
+        user_id:
+          type: integer
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      example:
+        user_id: 1
+        program_id: 6
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: 0
+        status: status
+    ApplicationInput:
+      required:
+      - program_id
+      - user_id
+      type: object
+      properties:
+        program_id:
+          type: integer
+        user_id:
+          type: integer
+        status:
+          type: string
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+
